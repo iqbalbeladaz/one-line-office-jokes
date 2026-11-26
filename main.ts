@@ -7,9 +7,13 @@ import { join } from "node:path";
 const ENTRY =
   "I hit reply-all to ask everyone to stop hitting reply-all, and now 400 colleagues are debating it in a thread titled 'Re: Re: Re: Re: stop'.";
 
+// The gate counts characters, not UTF-16 code units: count code points so a
+// future edit with an emoji or accented letter is still gated correctly.
+const charCount = (s: string): number => Array.from(s).length;
+
 // The gate: UTF-8 text of 1 to 199 characters, not only white space, one line.
-if (ENTRY.length < 1 || ENTRY.length > 199) {
-  throw new Error(`entry is ${ENTRY.length} chars, must be 1-199`);
+if (charCount(ENTRY) < 1 || charCount(ENTRY) > 199) {
+  throw new Error(`entry is ${charCount(ENTRY)} chars, must be 1-199`);
 }
 if (/\n/.test(ENTRY) || ENTRY.trim().length === 0) {
   throw new Error("entry must be a single non-blank line");
